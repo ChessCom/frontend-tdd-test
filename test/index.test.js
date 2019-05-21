@@ -36,6 +36,30 @@ describe('getUserRating', () => {
   
       expect(getUserRating(user)).toEqual(1);
     });
+
+    it('a user should get 7 points for the first 5 years active', () => {
+        const user = createUser({
+          yearsActive: 5,
+        });
+    
+        expect(getUserRating(user)).toEqual(7);
+    });
+
+    it('a user should get 8 points for the first 6 years active', () => {
+        const user = createUser({
+          yearsActive: 6,
+        });
+    
+        expect(getUserRating(user)).toEqual(8);
+    });
+
+    it('a user should get 37 points for the first 27 years active', () => {
+        const user = createUser({
+          yearsActive: 27,
+        });
+    
+        expect(getUserRating(user)).toEqual(37);
+    });
   });
 
   // membership status
@@ -47,11 +71,69 @@ describe('getUserRating', () => {
        
       expect(getUserRating(user)).toEqual(1);
     });
+
+    it('should return 2 points for a user with a silver membership', () => {
+      const user = createUser({
+        membershipLevel: 'silver',
+      });
+       
+      expect(getUserRating(user)).toEqual(2);
+    });
+
+    it('should return 3 points for a user with a gold membership', () => {
+      const user = createUser({
+        membershipLevel: 'gold',
+      });
+       
+      expect(getUserRating(user)).toEqual(3);
+    });
   });
   
 
   describe('test score based on games', () => {
-    // TODO: write tests to score based on user's games
+    it('should return 21 points for a user who won 7 games', () => {
+        const user = createUser({}, {
+            won: 7
+        })
+
+        console.log(user)
+
+        expect(getUserRating(user)).toEqual(21);
+    })
+
+    it('should return 14 points for a user who have 14 draws', () => {
+        const user = createUser({}, {
+            draw: 14
+        })
+
+        expect(getUserRating(user)).toEqual(14);
+    })
+
+    it('should return -5 points for a user who lost 5 games', () => {
+        const user = createUser({}, {
+            lost: 5
+        })
+
+        expect(getUserRating(user)).toEqual(-5);
+    })
+
+    it('should return -10 points for a user who forfeited 5 games', () => {
+        const user = createUser({}, {
+            forfeited: 5
+        })
+
+        expect(getUserRating(user)).toEqual(-10);
+    })
+
+    it('should return 0 points for a user who forfeited 5 games but is a gold member', () => {
+        const user = createUser({
+            membershipLevel: 'gold'
+        }, {
+            forfeited: 5
+        })
+
+        expect(getUserRating(user)).toEqual(0);
+    })
   });
   
   // new feature
